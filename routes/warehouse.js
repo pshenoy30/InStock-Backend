@@ -9,6 +9,7 @@ router.route('/')
 
 router.route('/:id')
     .get(warehouseController.warehouseBasedOnId)
+    .put(warehouseController.editWarehouseBasedOnId) 
     .delete(warehouseController.removeWarehouseBasedOnId);
 
 export default router;

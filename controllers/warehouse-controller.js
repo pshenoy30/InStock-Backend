@@ -80,9 +80,34 @@ const addWarehouse = async (req, res) => {
     }
 };
 
+const editWarehouseBasedOnId = async (req, res) => {
+    const validationErrors = validateWarehouseData(req.body);
+    if (Object.keys(validationErrors).length > 0) {
+        return res.status(400).json({ errors: validationErrors });
+    }
+
+    try {
+        const { id } = req.params;
+        const warehouseFound = await knex('warehouse').where({ id }).first();
+
+        if (!warehouseFound) {
+            return res.status(404).json({
+                message: `Warehouse with ID ${id} not found`
+            });
+        }
+
+        await knex('warehouse').where({ id }).update(req.body);
+        const updatedWarehouse = await knex('warehouse').where({ id }).first();
+        res.status(200).json(updatedWarehouse);
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
 export {
     warehouseIndex,
     warehouseBasedOnId,
     removeWarehouseBasedOnId,
-    addWarehouse
+    addWarehouse,
+    editWarehouseBasedOnId
 };
