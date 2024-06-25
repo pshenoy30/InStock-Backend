@@ -1,3 +1,4 @@
+// 20240625050437_create_inventories_table.js
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }

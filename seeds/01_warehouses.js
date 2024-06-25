@@ -1,3 +1,4 @@
+// 01_warehouses.js
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }

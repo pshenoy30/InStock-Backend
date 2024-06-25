@@ -1,3 +1,4 @@
+// 20240625050418_create_warehouses_table.js
 /**
  * @param { import("knex").Knex } knex
  * @returns { Promise<void> }
