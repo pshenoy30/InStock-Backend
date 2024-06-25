@@ -1,12 +1,4 @@
-// 01_warehouses.js
-/**
- * @param { import("knex").Knex } knex
- * @returns { Promise<void> }
- */
-export async function seed(knex) {
-  // Deletes ALL existing entries
-  await knex('warehouses').del();
-  await knex('warehouses').insert([
+export default [
     {
       id: 1,
       warehouse_name: 'Manhattan',
@@ -95,5 +87,4 @@ export async function seed(knex) {
       contact_phone: '+1 (646) 123-1234',
       contact_email: 'vmendoza@instock.com',
     },
-  ]);
-};
+  ];
