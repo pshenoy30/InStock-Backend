@@ -1,5 +1,5 @@
 import express from 'express';
-import 'dotenv/config'; 
+import 'dotenv/config';
 import cors from 'cors';
 import warehouse from "./routes/warehouse.js";
 import inventory from "./routes/inventory.js";
@@ -13,10 +13,13 @@ const PORT = process.env.PORT || 8080;
 // Initialize knex with the database configuration.
 const db = knex(dbConfig);
 
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
 // All routes
 app.use(cors()); 
 app.use("/warehouse", warehouse);
-app.use("/inventories", inventory);
+app.use("/inventory", inventory);
 
 app.get("/", (req, res) => {
     res.status(200).send("Testing Request Successful");
