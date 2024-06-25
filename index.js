@@ -15,6 +15,7 @@ const db = knex(dbConfig);
 
 // All routes
 app.use(cors()); 
+app.use(express.json());
 app.use("/warehouse", warehouse);
 app.use("/inventories", inventory);
 

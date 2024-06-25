@@ -30,7 +30,34 @@ const inventoryItemBasedOnId = async (req, res) => {
   }
 };
 
+const updateInventoryItem = async (req, res) => {
+    const { id } = req.params;
+    const { warehouse_id, item_name, description, catergory, status, quantity } = req.body;
+
+    try {
+        const updatedInventoryItem = await knex('inventory')
+            .where({ id })
+            .update({ warehouse_id, item_name, description, catergory, status, quantity });
+        if (updatedInventoryItem === 1) {
+            res.status(200).json({
+                message: 'Inventory item updated successfully' 
+            })
+        } else {
+            res.status(404).json({
+                message: 'Inventory item not found'
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            message: `Unable to update inventory item: ${error}`,
+        });
+    }
+};
+
+
+
 export { 
     inventoryIndex, 
-    inventoryItemBasedOnId 
+    inventoryItemBasedOnId,
+    updateInventoryItem
 };
