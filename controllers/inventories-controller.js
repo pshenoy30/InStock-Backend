@@ -23,9 +23,9 @@ const inventoryItemBasedOnId = async (req, res) => {
     }
 
     return res.status(200).json(inventoryItem);
-  } catch (error) {
+  } catch (err) {
     res.status(500).json({
-      message: `Unable to retreive the inventory item: ${error}`,
+      message: `Unable to retreive the inventory item: ${err}`,
     });
   }
 };
@@ -47,9 +47,9 @@ const updateInventoryItem = async (req, res) => {
                 message: 'Inventory item not found'
             })
         }
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({
-            message: `Unable to update inventory item: ${error}`,
+            message: `Unable to update inventory item: ${err}`,
         });
     }
 };
@@ -70,9 +70,9 @@ const deleteInventoryItem = async (req, res) => {
                 message: 'Inventory item not found'
             })
         }
-    } catch (error) {
+    } catch (err) {
         res.status(500).json({
-            message: `Unable to delete the inventory item: ${error}`,
+            message: `Unable to delete the inventory item: ${err}`,
         });
     }
 };
@@ -82,5 +82,5 @@ export {
     inventoryIndex, 
     inventoryItemBasedOnId,
     updateInventoryItem,
-    deleteInventoryItem
+    deleteInventoryItem,
 };
