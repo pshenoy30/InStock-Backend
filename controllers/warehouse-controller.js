@@ -31,7 +31,27 @@ const warehouseBasedOnId = async (req,res) => {
     }
 };
 
+const removeWarehouseBasedOnId = async (req, res) => {
+    try{
+        const warehouseRowDeleted = await knex("warehouse").where({id: req.params.id}).delete();
+        const inventoryRowDelete = await knex("inventory").where({warehouse_id: req.params.id}).delete();
+        
+        if(warehouseRowDeleted === 0){
+            return res.status(404).json({
+                message: `Warehouse with ID ${req.params.id} not found`
+            });
+        }
+
+        res.sendStatus(204);
+    } catch (err){
+        res.status(500).json({
+            message: `Unable to delete warehouse with ID: ${req.params.id}`
+        });
+    }
+}
+
 export {
     warehouseIndex,
-    warehouseBasedOnId
+    warehouseBasedOnId,
+    removeWarehouseBasedOnId
 }
