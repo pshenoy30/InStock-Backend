@@ -8,6 +8,7 @@ router.route("/").get(inventoryController.inventoryIndex);
 router
   .route("/:id")
   .get(inventoryController.inventoryItemBasedOnId)
-  .put(inventoryController.updateInventoryItem);
+  .put(inventoryController.updateInventoryItem)
+  .delete(inventoryController.deleteInventoryItem)
 
 export default router;
