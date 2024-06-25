@@ -16,7 +16,7 @@ const db = knex(dbConfig);
 // All routes
 app.use(cors()); 
 app.use("/warehouse", warehouse);
-app.use("/inventory", inventory);
+app.use("/inventories", inventory);
 
 app.get("/", (req, res) => {
     res.status(200).send("Testing Request Successful");
