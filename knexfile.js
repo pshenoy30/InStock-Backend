@@ -1,8 +1,6 @@
 // knex.js
 // Import dotenv to process environment variables from `.env` file.
-// import dotenv from 'dotenv';
 import "dotenv/config";
-// dotenv.config();
 
 const dbConfig = {
   client: 'mysql2',
