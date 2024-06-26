@@ -114,7 +114,10 @@ const deleteInventoryItem = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deletedInventoryItem = await knex("inventory").where({ id }).delete();
+    const deletedInventoryItem = await knex("inventory")
+      .where({ id })
+      .delete();
+      
     if (deletedInventoryItem === 1) {
       res.status(204);
     } else {
