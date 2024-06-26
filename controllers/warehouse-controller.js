@@ -57,15 +57,23 @@ const removeWarehouseBasedOnId = async (req, res) => {
 const inventoryByWarehouseId = async (req, res) => {
   const { id } = req.params;
   try {
-    const selectedWarehouse = await knex('warehouse').where({ id });
+    const selectedWarehouse = await knex("warehouse").where({ id });
     if (selectedWarehouse === 0) {
       return res.status(404).json({
-        message: 'Warehouse not found'
+        message: "Warehouse not found",
       });
     }
-    const inventories = await knex('inventory')
-    .where({warehouse_id: id})
-    .select('id', 'warehouse_id','item_name', 'description', 'category', 'status', 'quantity');
+    const inventories = await knex("inventory")
+      .where({ warehouse_id: id })
+      .select(
+        "id",
+        "warehouse_id",
+        "item_name",
+        "description",
+        "category",
+        "status",
+        "quantity"
+      );
     res.status(200).json(inventories);
   } catch (err) {
     res.status(500).send(`Error in retrieving inventories: ${err}`);
