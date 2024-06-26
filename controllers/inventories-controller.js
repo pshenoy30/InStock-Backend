@@ -11,6 +11,7 @@ const inventoryIndex = async (req, res) => {
         "inventory.id",
         "warehouse.warehouse_name",
         "inventory.item_name",
+        "inventory.description",
         "inventory.category",
         "inventory.status",
         "inventory.quantity"
