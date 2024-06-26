@@ -9,11 +9,11 @@ const inventoryIndex = async (req, res) => {
       .join("warehouse", "inventory.warehouse_id", "warehouse.id")
       .select(
         "inventory.id",
+        "warehouse.warehouse_name",
         "inventory.item_name",
         "inventory.category",
         "inventory.status",
-        "inventory.quantity",
-        "warehouse.warehouse_name"
+        "inventory.quantity"
       );
     res.status(200).json(data);
   } catch (err) {
