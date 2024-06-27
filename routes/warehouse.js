@@ -12,4 +12,7 @@ router.route('/:id')
     .put(warehouseController.editWarehouseBasedOnId) 
     .delete(warehouseController.removeWarehouseBasedOnId);
 
+router.route("/:id/inventories")
+    .get(warehouseController.inventoryByWarehouseId);
+    
 export default router;
