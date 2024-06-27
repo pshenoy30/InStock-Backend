@@ -24,7 +24,19 @@ const inventoryIndex = async (req, res) => {
 
 const inventoryItemBasedOnId = async (req, res) => {
   try {
-    const inventoryItem = await knex("inventory").where({ id: req.params.id }).first();
+    const inventoryItem = await knex("inventory")
+      .join("warehouse", "inventory.warehouse_id", "warehouse.id")
+      .where({ "inventory.id": req.params.id })
+      .select(
+        "inventory.id",
+        "warehouse.warehouse_name",
+        "inventory.item_name",
+        "inventory.description",
+        "inventory.category",
+        "inventory.status",
+        "inventory.quantity"
+      )
+      .first();
 
     if (inventoryItem.length === 0) {
       return res.status(404).json({
@@ -84,9 +96,7 @@ const updateInventoryItem = async (req, res) => {
     req.body;
 
   try {
-    const updatedInventoryItem = await knex("inventory")
-    .where({ id })
-    .update({
+    const updatedInventoryItem = await knex("inventory").where({ id }).update({
       warehouse_id,
       item_name,
       description,
@@ -114,9 +124,7 @@ const deleteInventoryItem = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const deletedInventoryItem = await knex("inventory")
-      .where({ id })
-      .delete();
+    const deletedInventoryItem = await knex("inventory").where({ id }).delete();
 
     if (deletedInventoryItem === 1) {
       res.status(204);
