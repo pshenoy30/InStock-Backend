@@ -1,13 +1,13 @@
+// index.js
 import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
-import warehouse from "./routes/warehouse.js";
-import inventory from "./routes/inventory.js";
+import warehouseRouter from "./routes/warehouse.js";
+import inventoryRouter from "./routes/inventory.js";
+import knex from 'knex';
 import dbConfig from "./knexfile.js";
-import knex from 'knex'; 
 
 const app = express();
-
 const PORT = process.env.PORT || 8080;
 
 // Initialize knex with the database configuration.
@@ -16,16 +16,23 @@ const db = knex(dbConfig);
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-// All routes
-app.use(cors()); 
-app.use("/warehouse", warehouse);
-app.use("/inventory", inventory);
+// Enable CORS for all routes
+app.use(cors());
+
+// Request logging middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);
+  next();
+});
+
+// Routes
+app.use("/warehouse", warehouseRouter);
+app.use("/inventory", inventoryRouter);
 
 app.get("/", (req, res) => {
     res.status(200).send("Testing Request Successful");
 });
 
 app.listen(PORT, () => {
-    console.log(`Started the server on ${PORT}`);
-    console.log("To kill the server use CTRL+C");
+    console.log(`Server is running on port ${PORT}`);
 });
