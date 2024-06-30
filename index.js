@@ -21,8 +21,8 @@ app.use(cors());
 
 // Request logging middleware
 app.use((req, res, next) => {
-  console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);
-  next();
+    console.log(`[${new Date().toLocaleString()}] ${req.method} ${req.url}`);
+    next();
 });
 
 // Routes
@@ -34,5 +34,6 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`🚀 💯 Server is running on port ${PORT}`);
+    console.log("❌ 🛑 To kill the server use CTRL+C");
 });
