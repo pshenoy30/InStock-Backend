@@ -29,6 +29,7 @@ const inventoryItemBasedOnId = async (req, res) => {
       .where({ "inventory.id": req.params.id })
       .select(
         "inventory.id",
+        "inventory.warehouse_id",
         "warehouse.warehouse_name",
         "inventory.item_name",
         "inventory.description",
@@ -90,17 +91,42 @@ const addInventoryItem = async (req, res) => {
   }
 };
 
+//Validation
+const checkIfWarehouseIdExists = async (id) => {
+  try {
+      const warehouseFound = await knex("warehouse").where({ id });
+
+      if (warehouseFound.length === 0) {
+        return false;
+      } else {
+        return true;
+      }
+
+  } catch (err) {
+      console.log("Warehouse not found");
+  }
+};
+
 const updateInventoryItem = async (req, res) => {
   const { id } = req.params;
-  const { warehouse_id, item_name, description, catergory, status, quantity } =
+  const { warehouseId, itemName, description, category, status, quantity } =
     req.body;
 
   try {
+    //validation
+    const doesWarehouseExist = await checkIfWarehouseIdExists(warehouseId);
+    if (quantity < 0 || itemName == "" || description == "" || !doesWarehouseExist){
+      throw err;
+    }
+    if (status === "In Stock" && quantity === 0) {
+      throw err;
+    }
+
     const updatedInventoryItem = await knex("inventory").where({ id }).update({
-      warehouse_id,
-      item_name,
+      "inventory.warehouse_id": warehouseId,
+      "inventory.item_name": itemName,
       description,
-      catergory,
+      category,
       status,
       quantity,
     });
