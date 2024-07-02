@@ -39,7 +39,7 @@ const inventoryItemBasedOnId = async (req, res) => {
       )
       .first();
 
-    if (inventoryItem.length === 0) {
+    if (!inventoryItem) {
       return res.status(404).json({
         message: `Inventory item with id: ${req.params.id} does not exist`,
       });
@@ -53,23 +53,22 @@ const inventoryItemBasedOnId = async (req, res) => {
   }
 };
 
-const validateInventoryData = async (data) => {
+const validateInventoryData = async (data, isUpdate = false) => {
   const errors = {};
-  if (!data.warehouse_id) errors.warehouse_id = "Warehouse ID is required";
-  if (!data.item_name) errors.item_name = "Item name is required";
-  if (!data.description) errors.description = "Description is required";
-  if (!data.category) errors.category = "Category is required";
-  if (!data.status) errors.status = "Status is required";
-  if (!data.quantity) errors.quantity = "Quantity is required";
-  if (isNaN(Number(data.quantity)))
-    errors.quantity = "Quantity must be a number";
+  if (!data.warehouse_id) errors.warehouse_id = 'Warehouse ID is required';
+  if (!data.item_name) errors.item_name = 'Item name is required';
+  if (!isUpdate && !data.description) errors.description = 'Description is required';
+  if (!data.category) errors.category = 'Category is required';
+  if (!data.status) errors.status = 'Status is required';
+  if (data.quantity == null) errors.quantity = 'Quantity is required';
+  if (isNaN(Number(data.quantity))) errors.quantity = 'Quantity must be a number';
 
   if (data.warehouse_id) {
-    const warehouseExists = await knex("warehouse")
-      .where({ id: data.warehouse_id })
-      .first();
+    const warehouseExists = await knex('warehouse').where({
+      id: data.warehouse_id
+    }).first();
     if (!warehouseExists) {
-      errors.warehouse_id = "Warehouse ID does not exist";
+      errors.warehouse_id = 'Warehouse ID does not exist';
     }
   }
 
@@ -91,7 +90,68 @@ const addInventoryItem = async (req, res) => {
   }
 };
 
-//Validation
+const addOrUpdateInventoryItem = async (req, res) => {
+  const {
+    item_name,
+    category,
+    warehouse_id
+  } = req.body;
+
+  try {
+    const existingItem = await knex('inventory')
+      .where({
+        item_name,
+        category,
+        warehouse_id
+      })
+      .first();
+
+    const validationErrors = await validateInventoryData(req.body, !!existingItem);
+    if (Object.keys(validationErrors).length > 0) {
+      return res.status(400).json({
+        errors: validationErrors
+      });
+    }
+
+    if (existingItem) {
+      const updateData = {
+        ...req.body
+      };
+      if (!req.body.description) {
+        updateData.description = existingItem.description;
+      }
+
+      await knex('inventory')
+        .where({
+          id: existingItem.id
+        })
+        .update(updateData);
+      return res.status(200).json({
+        message: 'Inventory item updated successfully'
+      });
+    } else {
+      const [id] = await knex('inventory').insert(req.body);
+      const newInventoryItem = await knex('inventory').where({
+        id
+      }).first();
+      return res.status(201).json(newInventoryItem);
+    }
+  } catch (error) {
+    res.status(500).json({
+      error: 'Internal server error'
+    });
+  }
+};
+
+const uniqueCategories = async (req, res) => {
+  try {
+    const categories = await knex("inventory").distinct("category");
+    res.status(200).json(categories);
+  } catch (err) {
+    res.status(400).send(`Error in retrieving unique categories: ${err}`);
+  }
+};
+
 const checkIfWarehouseIdExists = async (id) => {
   try {
       const warehouseFound = await knex("warehouse").where({ id });
@@ -113,7 +173,6 @@ const updateInventoryItem = async (req, res) => {
     req.body;
 
   try {
-    //validation
     const doesWarehouseExist = await checkIfWarehouseIdExists(warehouseId);
     if (quantity < 0 || itemName == "" || description == "" || !doesWarehouseExist){
       throw err;
@@ -153,7 +212,7 @@ const deleteInventoryItem = async (req, res) => {
     const deletedInventoryItem = await knex("inventory").where({ id }).delete();
 
     if (deletedInventoryItem === 1) {
-      res.status(204);
+      res.status(204).send();
     } else {
       res.status(404).json({
         message: "Inventory item not found",
@@ -172,4 +231,6 @@ export {
   addInventoryItem,
   updateInventoryItem,
   deleteInventoryItem,
+  addOrUpdateInventoryItem,
+  uniqueCategories
 };

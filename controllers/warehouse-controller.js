@@ -4,6 +4,7 @@ import configuration from "../knexfile.js";
 const knex = initKnex(configuration);
 
 const warehouseIndex = async (req, res) => {
+    console.log('Fetching warehouse items');
     try {
         const data = await knex("warehouse");
         res.status(200).json(data);
@@ -13,8 +14,11 @@ const warehouseIndex = async (req, res) => {
 };
 
 const warehouseBasedOnId = async (req, res) => {
+    console.log('Fetching warehouse item by id');
     try {
-        const warehouseFound = await knex("warehouse").where({ id: req.params.id });
+        const warehouseFound = await knex("warehouse").where({
+            id: req.params.id
+        });
 
         if (warehouseFound.length === 0) {
             return res.status(404).json({
@@ -32,9 +36,14 @@ const warehouseBasedOnId = async (req, res) => {
 };
 
 const removeWarehouseBasedOnId = async (req, res) => {
+    console.log('Removing warehouse item by id');
     try {
-        const warehouseRowDeleted = await knex("warehouse").where({ id: req.params.id }).delete();
-        const inventoryRowDelete = await knex("inventory").where({ warehouse_id: req.params.id }).delete();
+        const warehouseRowDeleted = await knex("warehouse").where({
+            id: req.params.id
+        }).delete();
+        const inventoryRowDelete = await knex("inventory").where({
+            warehouse_id: req.params.id
+        }).delete();
 
         if (warehouseRowDeleted === 0) {
             return res.status(404).json({
@@ -47,6 +56,16 @@ const removeWarehouseBasedOnId = async (req, res) => {
         res.status(500).json({
             message: `Unable to delete warehouse with ID: ${req.params.id}`
         });
+    }
+};
+
+const uniqueWarehouses = async (req, res) => {
+    console.log('Fetching unique warehouses');
+    try {
+        const warehouses = await knex("warehouse").distinct("id as warehouse_id", "warehouse_name").limit(100);
+        res.status(200).json(warehouses);
+    } catch (err) {
+        res.status(400).send(`Error in retrieving unique warehouses: ${err}`);
     }
 };
 
@@ -66,29 +85,43 @@ const validateWarehouseData = (data) => {
 };
 
 const addWarehouse = async (req, res) => {
+    console.log('Adding warehouse item');
     const validationErrors = validateWarehouseData(req.body);
     if (Object.keys(validationErrors).length > 0) {
-        return res.status(400).json({ errors: validationErrors });
+        return res.status(400).json({
+            errors: validationErrors
+        });
     }
 
     try {
         const [id] = await knex('warehouse').insert(req.body);
-        const newWarehouse = await knex('warehouse').where({ id }).first();
+        const newWarehouse = await knex('warehouse').where({
+            id
+        }).first();
         res.status(201).json(newWarehouse);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({
+            error: 'Internal server error'
+        });
     }
 };
 
 const editWarehouseBasedOnId = async (req, res) => {
+    console.log('Editing warehouse item by id');
     const validationErrors = validateWarehouseData(req.body);
     if (Object.keys(validationErrors).length > 0) {
-        return res.status(400).json({ errors: validationErrors });
+        return res.status(400).json({
+            errors: validationErrors
+        });
     }
 
     try {
-        const { id } = req.params;
-        const warehouseFound = await knex('warehouse').where({ id }).first();
+        const {
+            id
+        } = req.params;
+        const warehouseFound = await knex('warehouse').where({
+            id
+        }).first();
 
         if (!warehouseFound) {
             return res.status(404).json({
@@ -96,11 +129,17 @@ const editWarehouseBasedOnId = async (req, res) => {
             });
         }
 
-        await knex('warehouse').where({ id }).update(req.body);
-        const updatedWarehouse = await knex('warehouse').where({ id }).first();
+        await knex('warehouse').where({
+            id
+        }).update(req.body);
+        const updatedWarehouse = await knex('warehouse').where({
+            id
+        }).first();
         res.status(200).json(updatedWarehouse);
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status (500).json({
+            error: 'Internal server error'
+        });
     }
 };
 
@@ -136,5 +175,6 @@ export {
     removeWarehouseBasedOnId,
     addWarehouse,
     editWarehouseBasedOnId,
-    inventoryByWarehouseId,
+    uniqueWarehouses,
+    inventoryByWarehouseId
 };
