@@ -6,10 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "nodemon index.js",
-    "migrate": "knex migrate:latest",
-    "migrate:down": "knex migrate:down",
-    "migrate:rollback": "knex migrate:rollback",
-    "seed": "knex seed:run"
+    "db:migrate": "knex migrate:latest",
+    "db:seed": "knex seed:run"
   },
   "keywords": [],
   "author": "",
