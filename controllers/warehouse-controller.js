@@ -1,4 +1,3 @@
-// controllers/warehouse-controller.js
 import initKnex from "knex";
 import configuration from "../knexfile.js";
 
@@ -70,8 +69,6 @@ const uniqueWarehouses = async (req, res) => {
     }
 };
 
-
-
 const validateWarehouseData = (data) => {
     const errors = {};
     if (!data.warehouse_name) errors.warehouse_name = 'Warehouse name is required';
@@ -140,11 +137,37 @@ const editWarehouseBasedOnId = async (req, res) => {
         }).first();
         res.status(200).json(updatedWarehouse);
     } catch (error) {
-        res.status(500).json({
+        res.status (500).json({
             error: 'Internal server error'
         });
     }
 };
+
+const inventoryByWarehouseId = async (req, res) => {
+    const { id } = req.params;
+    try {
+      const selectedWarehouse = await knex("warehouse").where({ id });
+      if (selectedWarehouse === 0) {
+        return res.status(404).json({
+          message: "Warehouse not found",
+        });
+      }
+      const inventories = await knex("inventory")
+        .where({ warehouse_id: id })
+        .select(
+          "id",
+          "warehouse_id",
+          "item_name",
+          "description",
+          "category",
+          "status",
+          "quantity"
+        );
+      res.status(200).json(inventories);
+    } catch (err) {
+      res.status(500).send(`Error in retrieving inventories: ${err}`);
+    }
+  };
 
 export {
     warehouseIndex,
@@ -152,5 +175,6 @@ export {
     removeWarehouseBasedOnId,
     addWarehouse,
     editWarehouseBasedOnId,
-    uniqueWarehouses
+    uniqueWarehouses,
+    inventoryByWarehouseId
 };
